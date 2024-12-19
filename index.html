@@ -1,0 +1,69 @@
+<?php
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "concert_booking";
+
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $name = $_POST['name'];
+    $email = $_POST['email'];
+    $phone = $_POST['phone'];
+    $concert = $_POST['concert'];
+    $seats = $_POST['seats'];
+
+    $sql = "INSERT INTO bookings (name, email, phone, concert, seats) VALUES (?, ?, ?, ?, ?)";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("sssss", $name, $email, $phone, $concert, $seats);
+    $stmt->execute();
+
+    echo "<div class='confirmation'>";
+    echo "<h2>Booking Confirmation</h2>";
+    echo "<p><strong>Name:</strong> $name</p>";
+    echo "<p><strong>Email:</strong> $email</p>";
+    echo "<p><strong>Phone:</strong> $phone</p>";
+    echo "<p><strong>Concert:</strong> $concert</p>";
+    echo "<p><strong>Seats:</strong> $seats</p>";
+    echo "</div>";
+}
+
+$conn->close();
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Concert Ticket Booking</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Concert Ticket Booking</h1>
+        <form id="ticket-form" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
+            <label for="name">Full Name:</label>
+            <input type="text" id="name" name="name" required>
+            <label for="email">Email Address:</label>
+            <input type="email" id="email" name="email" required>
+            <label for="phone">Phone Number:</label>
+            <input type="text" id="phone" name="phone" required>
+            <label for="concert">Concert Type:</label>
+            <select id="concert" name="concert" required>
+                <option value="Rock">Rock</option>
+                <option value="Pop">Pop</option>
+                <option value="Jazz">Jazz</option>
+                <option value="Classical">Classical</option>
+            </select>
+            <label for="seats">Number of Seats:</label>
+            <input type="number" id="seats" name="seats" required min="1">
+            <button type="submit" class="submit-btn">Book Ticket</button>
+        </form>
+    </div>
+</body>
+</html>
